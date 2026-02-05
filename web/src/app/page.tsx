@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 const grid = Array.from({ length: 100 }, (_, i) => i);
@@ -31,6 +32,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  const router = useRouter();
 
   const handleCreate = async () => {
     setError(null);
@@ -41,7 +43,9 @@ export default function Home() {
       }
       const data = await res.json();
       localStorage.setItem("ws_token", data.token);
+      localStorage.setItem("ws_player", data.player);
       setGameInfo({ gameId: data.game_id, joinCode: data.join_code, player: data.player });
+      router.push(`/game/${data.game_id}`);
     } catch (err) {
       setError("Could not create game");
     }
@@ -60,7 +64,9 @@ export default function Home() {
       }
       const data = await res.json();
       localStorage.setItem("ws_token", data.token);
+      localStorage.setItem("ws_player", data.player);
       setGameInfo({ gameId: data.game_id, player: data.player });
+      router.push(`/game/${data.game_id}`);
     } catch (err) {
       setError("Could not join game");
     }

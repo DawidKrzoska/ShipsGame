@@ -49,3 +49,7 @@ func RequestLogger(logger *log.Logger, next http.Handler) http.Handler {
 		)
 	})
 }
+
+type Broadcaster interface {
+	Broadcast(gameID string, messageType string, payload any)
+}

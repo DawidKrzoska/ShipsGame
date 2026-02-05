@@ -40,9 +40,10 @@ func main() {
 	}
 
 	gamesHandler := &httpapi.GamesHandler{
-		Store:     redisClient,
-		JWTSecret: cfg.JWTSecret,
-		Logger:    logger,
+		Store:       redisClient,
+		JWTSecret:   cfg.JWTSecret,
+		Logger:      logger,
+		Broadcaster: hub,
 	}
 
 	mux := httpapi.NewRouter(httpapi.RouterConfig{

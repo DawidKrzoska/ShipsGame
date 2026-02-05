@@ -32,7 +32,15 @@ func (s *Server) Handler() http.Handler {
 func (s *Server) authenticate(r *http.Request) (string, string, error) {
 	header := r.Header.Get("Authorization")
 	if header == "" {
-		return "", "", errors.New("missing authorization")
+		token := r.URL.Query().Get("token")
+		if token == "" {
+			return "", "", errors.New("missing authorization")
+		}
+		claims, err := auth.ParseToken(token, s.JWTSecret)
+		if err != nil {
+			return "", "", err
+		}
+		return claims.GameID, claims.Player, nil
 	}
 	parts := strings.SplitN(header, " ", 2)
 	if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
@@ -135,7 +143,7 @@ func (s *Server) handleFire(client *Client, payload json.RawMessage) {
 		},
 	}
 	if data, err := json.Marshal(shotMsg); err == nil {
-		s.Hub.Broadcast(fire.GameID, data)
+		s.Hub.BroadcastRaw(fire.GameID, data)
 	}
 
 	meta, err := s.Store.GetMeta(context.Background(), fire.GameID)
@@ -148,7 +156,7 @@ func (s *Server) handleFire(client *Client, payload json.RawMessage) {
 			},
 		}
 		if data, err := json.Marshal(turnMsg); err == nil {
-			s.Hub.Broadcast(fire.GameID, data)
+			s.Hub.BroadcastRaw(fire.GameID, data)
 		}
 
 		if meta.Status == "finished" {
@@ -160,7 +168,7 @@ func (s *Server) handleFire(client *Client, payload json.RawMessage) {
 				},
 			}
 			if data, err := json.Marshal(finished); err == nil {
-				s.Hub.Broadcast(fire.GameID, data)
+				s.Hub.BroadcastRaw(fire.GameID, data)
 			}
 		}
 	}

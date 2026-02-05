@@ -13,9 +13,10 @@ import (
 )
 
 type GamesHandler struct {
-	Store     *redisstore.Client
-	JWTSecret string
-	Logger    *log.Logger
+	Store       *redisstore.Client
+	JWTSecret   string
+	Logger      *log.Logger
+	Broadcaster Broadcaster
 }
 
 type CreateGameResponse struct {
@@ -134,6 +135,13 @@ func (h *GamesHandler) handleJoin(w http.ResponseWriter, r *http.Request) {
 		Player: player,
 		Token:  token,
 	})
+
+	if h.Broadcaster != nil {
+		h.Broadcaster.Broadcast(meta.ID, "opponent_joined", OpponentJoinedPayload{
+			GameID: meta.ID,
+			Player: player,
+		})
+	}
 
 	if h.Logger != nil {
 		h.Logger.Printf("game joined game_id=%s player=%s", meta.ID, player)

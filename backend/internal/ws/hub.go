@@ -1,6 +1,9 @@
 package ws
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+)
 
 type HubMessage struct {
 	GameID string
@@ -66,6 +69,18 @@ func (h *Hub) Run() {
 	}
 }
 
-func (h *Hub) Broadcast(gameID string, data []byte) {
+func (h *Hub) BroadcastRaw(gameID string, data []byte) {
+	h.broadcast <- HubMessage{GameID: gameID, Data: data}
+}
+
+func (h *Hub) Broadcast(gameID string, messageType string, payload any) {
+	msg := ServerMessage{
+		Type:    messageType,
+		Payload: payload,
+	}
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return
+	}
 	h.broadcast <- HubMessage{GameID: gameID, Data: data}
 }

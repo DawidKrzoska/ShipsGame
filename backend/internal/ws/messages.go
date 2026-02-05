@@ -58,6 +58,11 @@ type GameFinishedPayload struct {
 	Winner string `json:"winner"`
 }
 
+type OpponentJoinedPayload struct {
+	GameID string `json:"game_id"`
+	Player string `json:"player"`
+}
+
 type ErrorPayload struct {
 	Message string `json:"message"`
 }
