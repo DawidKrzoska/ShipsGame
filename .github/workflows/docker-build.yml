@@ -1,0 +1,32 @@
+name: Docker Build (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      backend:
+        description: "Build backend image"
+        type: boolean
+        default: true
+      web:
+        description: "Build web image"
+        type: boolean
+        default: true
+
+jobs:
+  build-backend:
+    if: ${{ inputs.backend }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build backend image
+        run: docker build -t ships-backend ./backend
+
+  build-web:
+    if: ${{ inputs.web }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build web image
+        run: docker build -t ships-web ./web
