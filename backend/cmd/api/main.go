@@ -6,26 +6,24 @@ import (
 	"os"
 	"time"
 
+	"shipsgame/internal/config"
 	httpapi "shipsgame/internal/http"
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	cfg := config.Load()
 
-	mux := http.NewServeMux()
-	httpapi.RegisterHealth(mux)
+	mux := httpapi.NewRouter()
 
 	server := &http.Server{
-		Addr:              ":" + port,
+		Addr:              cfg.ServerAddr,
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	log.Printf("listening on :%s", port)
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.LUTC)
+	logger.Printf("listening on %s", cfg.ServerAddr)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("server error: %v", err)
+		logger.Fatalf("server error: %v", err)
 	}
 }
