@@ -1,7 +1,7 @@
-\"use client\";
+"use client";
 
-import { useState } from \"react\";
-import styles from \"./page.module.css\";
+import { useState } from "react";
+import styles from "./page.module.css";
 
 const grid = Array.from({ length: 100 }, (_, i) => i);
 const shipCells = new Set([12, 13, 14, 15, 16, 44, 54, 64, 74, 34, 35, 36, 71, 81]);
@@ -21,8 +21,8 @@ const leaderboard = [
 ];
 
 export default function Home() {
-  const [joinCode, setJoinCode] = useState(\"\");
-  const [callSign, setCallSign] = useState(\"\");
+  const [joinCode, setJoinCode] = useState("");
+  const [callSign, setCallSign] = useState("");
   const [gameInfo, setGameInfo] = useState<{
     gameId: string;
     joinCode?: string;
@@ -30,20 +30,20 @@ export default function Home() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || \"http://localhost:8080\";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
   const handleCreate = async () => {
     setError(null);
     try {
-      const res = await fetch(`${apiUrl}/games`, { method: \"POST\" });
+      const res = await fetch(`${apiUrl}/games`, { method: "POST" });
       if (!res.ok) {
-        throw new Error(\"Failed to create game\");
+        throw new Error("Failed to create game");
       }
       const data = await res.json();
-      localStorage.setItem(\"ws_token\", data.token);
+      localStorage.setItem("ws_token", data.token);
       setGameInfo({ gameId: data.game_id, joinCode: data.join_code, player: data.player });
     } catch (err) {
-      setError(\"Could not create game\");
+      setError("Could not create game");
     }
   };
 
@@ -51,18 +51,18 @@ export default function Home() {
     setError(null);
     try {
       const res = await fetch(`${apiUrl}/games/join`, {
-        method: \"POST\",
-        headers: { \"Content-Type\": \"application/json\" },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ join_code: joinCode }),
       });
       if (!res.ok) {
-        throw new Error(\"Failed to join game\");
+        throw new Error("Failed to join game");
       }
       const data = await res.json();
-      localStorage.setItem(\"ws_token\", data.token);
+      localStorage.setItem("ws_token", data.token);
       setGameInfo({ gameId: data.game_id, player: data.player });
     } catch (err) {
-      setError(\"Could not join game\");
+      setError("Could not join game");
     }
   };
 

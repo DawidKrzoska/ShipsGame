@@ -1,16 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Syne } from "next/font/google";
 import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-body",
-  subsets: ["latin"],
-});
-
-const syne = Syne({
-  variable: "--font-heading",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "WebShips",
@@ -24,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${syne.variable}`}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
