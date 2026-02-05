@@ -1,5 +1,7 @@
 :root {
   color-scheme: light;
+  --font-body: "Space Grotesk", "Avenir Next", "Fira Sans", sans-serif;
+  --font-heading: "Syne", "Avenir Next", "Playfair Display", serif;
   --ink: #0d1b2a;
   --navy: #11324a;
   --sea: #2c6e8f;

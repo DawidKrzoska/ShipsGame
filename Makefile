@@ -1,9 +1,12 @@
 COMPOSE = docker compose
 
-.PHONY: up down dev test lint web-install web-dev web-test
+.PHONY: up up-build down dev test lint web-install web-dev web-test
 
 up:
 	$(COMPOSE) up -d
+
+up-build:
+	$(COMPOSE) up -d --build
 
 down:
 	$(COMPOSE) down -v
