@@ -171,6 +171,21 @@
   gap: 16px;
 }
 
+.sessionInfo {
+  background: rgba(17, 50, 74, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: rgba(13, 27, 42, 0.8);
+  display: grid;
+  gap: 6px;
+}
+
+.errorText {
+  color: #b42318;
+  font-size: 13px;
+}
+
 .cardLabel {
   font-size: 12px;
   text-transform: uppercase;
