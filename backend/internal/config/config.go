@@ -11,6 +11,7 @@ type Config struct {
 	RedisPassword string
 	RedisDB       int
 	JWTSecret     string
+	PostgresDSN   string
 }
 
 func Load() Config {
@@ -23,6 +24,7 @@ func Load() Config {
 		RedisPassword: getenv("REDIS_PASSWORD", ""),
 		RedisDB:       redisDB,
 		JWTSecret:     getenv("JWT_SECRET", ""),
+		PostgresDSN:   getenv("POSTGRES_DSN", "postgres://ships:ships@localhost:5432/ships?sslmode=disable"),
 	}
 }
 
