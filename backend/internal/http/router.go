@@ -2,11 +2,20 @@ package httpapi
 
 import "net/http"
 
-func NewRouter(wsHandler http.Handler, corsConfig CORSConfig) http.Handler {
+type RouterConfig struct {
+	WsHandler    http.Handler
+	GamesHandler *GamesHandler
+	CORS         CORSConfig
+}
+
+func NewRouter(cfg RouterConfig) http.Handler {
 	mux := http.NewServeMux()
 	RegisterHealth(mux)
-	if wsHandler != nil {
-		mux.Handle("/ws", wsHandler)
+	if cfg.WsHandler != nil {
+		mux.Handle("/ws", cfg.WsHandler)
 	}
-	return CORS(corsConfig, mux)
+	if cfg.GamesHandler != nil {
+		cfg.GamesHandler.Register(mux)
+	}
+	return CORS(cfg.CORS, mux)
 }

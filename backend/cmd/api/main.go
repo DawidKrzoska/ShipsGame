@@ -39,8 +39,17 @@ func main() {
 		Logger:    logger,
 	}
 
-	mux := httpapi.NewRouter(wsServer.Handler(), httpapi.CORSConfig{
-		AllowedOrigins: cfg.CORSOrigins,
+	gamesHandler := &httpapi.GamesHandler{
+		Store:     redisClient,
+		JWTSecret: cfg.JWTSecret,
+	}
+
+	mux := httpapi.NewRouter(httpapi.RouterConfig{
+		WsHandler:    wsServer.Handler(),
+		GamesHandler: gamesHandler,
+		CORS: httpapi.CORSConfig{
+			AllowedOrigins: cfg.CORSOrigins,
+		},
 	})
 
 	server := &http.Server{

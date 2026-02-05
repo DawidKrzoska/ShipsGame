@@ -1,4 +1,7 @@
-import styles from "./page.module.css";
+\"use client\";
+
+import { useState } from \"react\";
+import styles from \"./page.module.css\";
 
 const grid = Array.from({ length: 100 }, (_, i) => i);
 const shipCells = new Set([12, 13, 14, 15, 16, 44, 54, 64, 74, 34, 35, 36, 71, 81]);
@@ -18,6 +21,51 @@ const leaderboard = [
 ];
 
 export default function Home() {
+  const [joinCode, setJoinCode] = useState(\"\");
+  const [callSign, setCallSign] = useState(\"\");
+  const [gameInfo, setGameInfo] = useState<{
+    gameId: string;
+    joinCode?: string;
+    player: string;
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || \"http://localhost:8080\";
+
+  const handleCreate = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`${apiUrl}/games`, { method: \"POST\" });
+      if (!res.ok) {
+        throw new Error(\"Failed to create game\");
+      }
+      const data = await res.json();
+      localStorage.setItem(\"ws_token\", data.token);
+      setGameInfo({ gameId: data.game_id, joinCode: data.join_code, player: data.player });
+    } catch (err) {
+      setError(\"Could not create game\");
+    }
+  };
+
+  const handleJoin = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`${apiUrl}/games/join`, {
+        method: \"POST\",
+        headers: { \"Content-Type\": \"application/json\" },
+        body: JSON.stringify({ join_code: joinCode }),
+      });
+      if (!res.ok) {
+        throw new Error(\"Failed to join game\");
+      }
+      const data = await res.json();
+      localStorage.setItem(\"ws_token\", data.token);
+      setGameInfo({ gameId: data.game_id, player: data.player });
+    } catch (err) {
+      setError(\"Could not join game\");
+    }
+  };
+
   return (
     <div className={styles.page}>
       <header className={styles.nav}>
@@ -46,8 +94,12 @@ export default function Home() {
               pings, and a clean lobby flow for guests.
             </p>
             <div className={styles.actions}>
-              <button className={styles.primaryButton}>Create Game</button>
-              <button className={styles.secondaryButton}>Join with Code</button>
+              <button className={styles.primaryButton} onClick={handleCreate}>
+                Create Game
+              </button>
+              <button className={styles.secondaryButton} onClick={handleJoin}>
+                Join with Code
+              </button>
             </div>
             <div className={styles.guestCard}>
               <div>
@@ -57,13 +109,31 @@ export default function Home() {
                 </p>
               </div>
               <div className={styles.inputRow}>
-                <input placeholder="Callsign" />
+                <input
+                  placeholder="Callsign"
+                  value={callSign}
+                  onChange={(event) => setCallSign(event.target.value)}
+                />
                 <button className={styles.ghostButton}>Enter</button>
               </div>
               <div className={styles.joinRow}>
-                <input placeholder="Join code" />
-                <button className={styles.ghostButton}>Join</button>
+                <input
+                  placeholder="Join code"
+                  value={joinCode}
+                  onChange={(event) => setJoinCode(event.target.value)}
+                />
+                <button className={styles.ghostButton} onClick={handleJoin}>
+                  Join
+                </button>
               </div>
+              {gameInfo ? (
+                <div className={styles.sessionInfo}>
+                  <p>Game: {gameInfo.gameId}</p>
+                  <p>Player: {gameInfo.player}</p>
+                  {gameInfo.joinCode ? <p>Join code: {gameInfo.joinCode}</p> : null}
+                </div>
+              ) : null}
+              {error ? <p className={styles.errorText}>{error}</p> : null}
             </div>
           </div>
 
