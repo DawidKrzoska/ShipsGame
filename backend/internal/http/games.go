@@ -3,6 +3,7 @@ package httpapi
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 type GamesHandler struct {
 	Store     *redisstore.Client
 	JWTSecret string
+	Logger    *log.Logger
 }
 
 type CreateGameResponse struct {
@@ -74,6 +76,10 @@ func (h *GamesHandler) handleCreate(w http.ResponseWriter, r *http.Request) {
 		Player:   "p1",
 		Token:    token,
 	})
+
+	if h.Logger != nil {
+		h.Logger.Printf("game created game_id=%s join_code=%s player=p1", meta.ID, meta.JoinCode)
+	}
 }
 
 func (h *GamesHandler) handleJoin(w http.ResponseWriter, r *http.Request) {
@@ -128,6 +134,10 @@ func (h *GamesHandler) handleJoin(w http.ResponseWriter, r *http.Request) {
 		Player: player,
 		Token:  token,
 	})
+
+	if h.Logger != nil {
+		h.Logger.Printf("game joined game_id=%s player=%s", meta.ID, player)
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, payload any) {

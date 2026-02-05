@@ -1,11 +1,15 @@
 package httpapi
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 type RouterConfig struct {
 	WsHandler    http.Handler
 	GamesHandler *GamesHandler
 	CORS         CORSConfig
+	Logger       *log.Logger
 }
 
 func NewRouter(cfg RouterConfig) http.Handler {
@@ -17,5 +21,9 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	if cfg.GamesHandler != nil {
 		cfg.GamesHandler.Register(mux)
 	}
-	return CORS(cfg.CORS, mux)
+	handler := CORS(cfg.CORS, mux)
+	if cfg.Logger != nil {
+		handler = RequestLogger(cfg.Logger, handler)
+	}
+	return handler
 }
