@@ -84,8 +84,15 @@ func (s *Server) handlePlaceShips(client *Client, payload json.RawMessage) {
 	}
 
 	if err := s.Store.PlaceShips(context.Background(), place.GameID, client.Player, placement); err != nil {
+		if s.Logger != nil {
+			s.Logger.Printf("ships place failed game_id=%s player=%s err=%v", place.GameID, client.Player, err)
+		}
 		s.sendError(client, err.Error())
 		return
+	}
+
+	if s.Logger != nil {
+		s.Logger.Printf("ships placed game_id=%s player=%s", place.GameID, client.Player)
 	}
 
 	state, err := s.Store.GetState(context.Background(), place.GameID, client.Player)
@@ -107,8 +114,15 @@ func (s *Server) handleFire(client *Client, payload json.RawMessage) {
 
 	result, err := s.Store.Fire(context.Background(), fire.GameID, client.Player, game.Coord{Row: fire.Coord.Row, Col: fire.Coord.Col})
 	if err != nil {
+		if s.Logger != nil {
+			s.Logger.Printf("shot failed game_id=%s player=%s coord=%d,%d err=%v", fire.GameID, client.Player, fire.Coord.Row, fire.Coord.Col, err)
+		}
 		s.sendError(client, err.Error())
 		return
+	}
+
+	if s.Logger != nil {
+		s.Logger.Printf("shot fired game_id=%s player=%s coord=%d,%d outcome=%s", fire.GameID, client.Player, fire.Coord.Row, fire.Coord.Col, outcomeLabel(result.Outcome))
 	}
 
 	shotMsg := ServerMessage{
