@@ -39,7 +39,9 @@ func main() {
 		Logger:    logger,
 	}
 
-	mux := httpapi.NewRouter(wsServer.Handler())
+	mux := httpapi.NewRouter(wsServer.Handler(), httpapi.CORSConfig{
+		AllowedOrigins: cfg.CORSOrigins,
+	})
 
 	server := &http.Server{
 		Addr:              cfg.ServerAddr,
