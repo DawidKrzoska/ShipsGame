@@ -143,7 +143,7 @@ func (c *Client) PlaceShips(ctx context.Context, gameID string, player string, p
 		}
 	}
 
-	shipsJSON, err := json.Marshal(board.Ships())
+	shipsJSON, err := json.Marshal(shipsToPayload(placement))
 	if err != nil {
 		return err
 	}
@@ -378,6 +378,18 @@ func randomHex(n int) (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(buf), nil
+}
+
+func shipsToPayload(placement ShipsPlacement) map[string][][]int {
+	result := make(map[string][][]int, len(placement))
+	for shipType, coords := range placement {
+		cells := make([][]int, 0, len(coords))
+		for _, coord := range coords {
+			cells = append(cells, []int{coord.Row, coord.Col})
+		}
+		result[strings.ToLower(string(shipType))] = cells
+	}
+	return result
 }
 
 var placeShipsScript = redis.NewScript(`
