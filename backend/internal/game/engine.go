@@ -164,3 +164,21 @@ func (b *Board) AllShipsSunk() bool {
 	}
 	return true
 }
+
+func (b *Board) Ships() map[ShipType][]Coord {
+	result := make(map[ShipType][]Coord, len(b.ships))
+	for shipType, ship := range b.ships {
+		cells := make([]Coord, len(ship.Cells))
+		copy(cells, ship.Cells)
+		result[shipType] = cells
+	}
+	return result
+}
+
+func (b *Board) Occupied() map[Coord]ShipType {
+	result := make(map[Coord]ShipType, len(b.occupied))
+	for coord, shipType := range b.occupied {
+		result[coord] = shipType
+	}
+	return result
+}
