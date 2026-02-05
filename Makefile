@@ -18,7 +18,7 @@ dev:
 
 test:
 	@if [ -f backend/go.mod ]; then \
-		cd backend && go test ./...; \
+		cd backend && GOCACHE=/tmp/go-build GOPATH=/tmp/go GOMODCACHE=/tmp/go/pkg/mod go test ./...; \
 	else \
 		echo "backend/go.mod not found; initialize backend before running tests"; \
 		exit 1; \
@@ -26,7 +26,7 @@ test:
 
 lint:
 	@if [ -f backend/go.mod ]; then \
-		cd backend && golangci-lint run ./...; \
+		cd backend && GOCACHE=/tmp/go-build GOPATH=/tmp/go GOMODCACHE=/tmp/go/pkg/mod GOLANGCI_LINT_CACHE=/tmp/golangci-lint-cache golangci-lint run ./...; \
 	else \
 		echo "backend/go.mod not found; initialize backend before running lint"; \
 		exit 1; \

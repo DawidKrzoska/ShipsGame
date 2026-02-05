@@ -239,36 +239,6 @@ func (c *Client) Fire(ctx context.Context, gameID string, player string, coord g
 	return shot, nil
 }
 
-func orientationFromCoords(coords []game.Coord) (game.Orientation, error) {
-	if len(coords) < 2 {
-		return game.Horizontal, nil
-	}
-
-	row := coords[0].Row
-	col := coords[0].Col
-	sameRow := true
-	sameCol := true
-	for _, c := range coords[1:] {
-		if c.Row != row {
-			sameRow = false
-		}
-		if c.Col != col {
-			sameCol = false
-		}
-	}
-
-	switch {
-	case sameRow && !sameCol:
-		return game.Horizontal, nil
-	case sameCol && !sameRow:
-		return game.Vertical, nil
-	case sameRow && sameCol:
-		return game.Horizontal, nil
-	default:
-		return 0, errors.New("invalid ship coordinates")
-	}
-}
-
 func validateCoords(shipType game.ShipType, coords []game.Coord) (game.Orientation, game.Coord, error) {
 	size, ok := game.StandardShipSet[shipType]
 	if !ok {
